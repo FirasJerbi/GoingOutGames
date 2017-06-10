@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "316963585917",
+    "firebase_url": "https://goinoutgames-e18b2.firebaseio.com",
+    "project_id": "goinoutgames-e18b2",
+    "storage_bucket": "goinoutgames-e18b2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:316963585917:android:295f1f7a74363444",
+        "android_client_info": {
+          "package_name": "com.goinoutgames.www.goinoutgames"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "316963585917-6r288jj8p72ci1gmbl386qrs29reiqcg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk11wIzdJx3u3BzsWwjk6gYQQl9bFPNcM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
