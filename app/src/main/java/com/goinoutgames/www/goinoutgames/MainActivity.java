@@ -11,15 +11,24 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.AsyncTask;
-import android.provider.Settings;
+import android.os.Build;
+
 import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.widget.DrawerLayout;
+
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
@@ -46,7 +55,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private ExpandableListView listViewEvents;
     private LocationManager locationManager;
-    private LocationListener locationListener;
+
 
     TextView t;
     Double longitude, latitude;
@@ -56,21 +65,54 @@ public class MainActivity extends AppCompatActivity {
     List<JSONObject> results;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    private DrawerLayout drawerLayout;
+    private ActionBarDrawerToggle mToggle;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        getPermissions();
 
+
+        getPermissions();
+        longitude= new Double(0);
+        latitude= new Double(0);
+        final Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
+
+
+        drawerLayout=(DrawerLayout)findViewById(R.id.drawer_layout);
         mAuth = FirebaseAuth.getInstance();
+        mToggle=new ActionBarDrawerToggle(this,drawerLayout,R.string.open,R.string.close);
+        drawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigationView);
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                if(item.getItemId()==R.id.sign_out){
+                    logOut();
+                }
+                if(item.getItemId()==R.id.about_us){
+
+                    startActivity(new Intent(MainActivity.this,AboutUs.class));
+                    drawerLayout.closeDrawers();
+                }
+                return false;
+            }
+        });
+
+
+
 
         listViewEvents = (ExpandableListView) findViewById(R.id.listViewEvents);
         t = (TextView) findViewById(R.id.textView);
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        locationListener = new LocationListener() {
+        /*locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 longitude = location.getLongitude();
@@ -93,8 +135,16 @@ public class MainActivity extends AppCompatActivity {
             public void onProviderDisabled(String s) {
                 startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
             }
-        };
+        };*/
         configureLocation();
+
+        ImageButton addEvent=(ImageButton)findViewById(R.id.addEvent);
+        addEvent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,AddEvent.class));
+            }
+        });
 
     }
 
@@ -113,20 +163,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void configureLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.INTERNET
-            }, 10);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.INTERNET
+                }, 10);
+            }
         }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000, 0, locationListener);
+        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000, 0, locationListener);
         Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         if (loc != null) {
             Log.e("LastKnownLoction", "longitude = " + loc.getLongitude() + " latitude = " + loc.getLatitude());
             longitude = loc.getLongitude();
             latitude = loc.getLatitude();
         }
+        else Log.e("Location unknown", "-----------");
         updateLocation();
     }
 
@@ -136,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             try {
+                Log.e("Share Prefs", String.valueOf(getSharedPreferences("gog",MODE_PRIVATE).getInt("userId",0)));
                 q = "https://gog-backend.herokuapp.com/gogames/getEventsDetails?city=" + URLEncoder.encode(city, "UTF-8") + "&country=" + country;
                 Log.w("URL encoded", q);
             } catch (UnsupportedEncodingException e) {
@@ -145,6 +199,7 @@ public class MainActivity extends AppCompatActivity {
             task = new GetDataTask();
             task.execute(q);
         } else {
+
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
             finish();
         }
@@ -169,10 +224,21 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     eventsName.add(j.get("event_name").toString());
                     List<String> details = new ArrayList<>();
-                    details.add("Event owner : " + j.get("user_nicename").toString());
+                    //details.add("Event owner : " + j.get("user_nicename").toString());
                     String date = j.get("event_start_date").toString().substring(0, 10);
-                    details.add("Date : " + date);
-                    details.add("Start time : " + j.get("event_start_time").toString());
+                    //details.add("Date : " + date);
+                    String endDate = j.get("event_end_date").toString().substring(0,10);
+                    String endTime = j.get("event_end_time").toString();
+
+                    details.add(j.get("user_nicename").toString()
+                            +":" + j.get("name").toString()
+                            +":" + date
+                            +":" + j.get("event_start_time").toString().substring(0,5)
+                            +":" + endDate
+                            +":" +endTime.substring(0,5)
+                            +":"+j.get("latitude")
+                            +":"+j.get("longitude")
+                    );
                     hashMap.put(eventsName.get(i), details);
                     i++;
                 } catch (JSONException e) {
@@ -213,7 +279,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String result) {
-            super.onPostExecute(result);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.CUPCAKE) {
+                super.onPostExecute(result);
+            }
             if (progressDialog != null) {
                 progressDialog.dismiss();
             }
@@ -282,55 +350,77 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateLocation() {
-        String currentCity = "";
-        String currentCountry = "";
-        country = currentCountry;
-        city = currentCity;
-
         Geocoder geocoder = new Geocoder(MainActivity.this, Locale.getDefault());
-        List<Address> addressList;
-        try {
-            addressList = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addressList.size() > 0) {
-                currentCity = addressList.get(0).getLocality();
-                currentCountry = addressList.get(0).getCountryCode();
-                country = currentCountry;
-                city = currentCity;
-                Log.e("LOCATION update locaion", "Country = " + country + " city = " + city);
-            } else {
-                Log.e("Geocoder ERROR ! ", "cannot get lcoation status");
-                Toast.makeText(MainActivity.this, "Error ! cannot get location status", Toast.LENGTH_SHORT).show();
 
+        if(geocoder.isPresent()) {
+
+            String currentCity = "";
+            String currentCountry = "";
+            country = currentCountry;
+            city = currentCity;
+
+
+            List<Address> addressList;
+            try {
+                addressList = geocoder.getFromLocation(latitude, longitude, 1);
+                if (addressList.size() > 0) {
+                    Log.e("geocoder results",addressList.get(0).toString());
+
+                    if(addressList.get(0).getLocality()!=null){
+                        currentCity=addressList.get(0).getLocality();
+                    }
+                    else currentCity = addressList.get(0).getAddressLine(1);
+                    currentCountry = addressList.get(0).getCountryCode();
+                    country = currentCountry;
+                    city = currentCity;
+                    Log.e("LOCATION update locaion", "Country = " + country + " city = " + city);
+                } else {
+                    Log.e("Geocoder ERROR ! ", "cannot get lcoation status");
+                    Toast.makeText(MainActivity.this, "Error ! cannot get location status", Toast.LENGTH_SHORT).show();
+
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        }else Log.e("Geocoder ERROR ! ", "cannot get location status");
 
 
     }
 
     public void getPermissions() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.INTERNET
-            }, 10);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.INTERNET
+                }, 10);
+            }
         }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
 
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_settings) {
-            logOut();
+        mToggle.onOptionsItemSelected(item);
+
+        if(item.getItemId()==R.id.addEvent){
+            Log.e("do your thing bro","");
         }
+
         return super.onOptionsItemSelected(item);
     }
+
+
+
+
+
+
+
 }

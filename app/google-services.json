@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "316963585917-i6pkdgk602t2ugc167tr2ai9ejqfoj3m.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.goinoutgames.www.goinoutgames",
+            "certificate_hash": "c62c8663cf1daeb61462c36b38acbf53e68b1071"
+          }
+        },
+        {
           "client_id": "316963585917-6r288jj8p72ci1gmbl386qrs29reiqcg.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,8 +37,13 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 1,
-          "other_platform_oauth_client": []
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "316963585917-6r288jj8p72ci1gmbl386qrs29reiqcg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         },
         "ads_service": {
           "status": 2

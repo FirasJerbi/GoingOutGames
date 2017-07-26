@@ -3,34 +3,179 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         >
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginLeft="30sp">
+            <TextView
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="5"
+                android:gravity="left"
+
+                android:textColor="#7fc342"
+                android:text="Event owner :"
+                android:textSize="13dp"
+
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/ownerName"
+
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2"
+                android:gravity="left"
+
+                android:textColor="#666666"
+                android:hint="owner name"
+
+
+                android:textSize="13dp" />
+
+        </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="30sp">
         <TextView
-            android:id="@+id/text"
+            android:id="@+id/textplace"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="3"
-            android:gravity="right"
-            android:paddingRight="5dp"
-            android:textColor="#7fc342"
+            android:layout_weight="5"
+            android:gravity="left"
 
+            android:textColor="#7fc342"
+            android:text="Place :"
             android:textSize="13dp"
 
             android:textStyle="bold" />
 
         <TextView
-            android:id="@+id/content"
+            android:id="@+id/place"
 
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="2"
             android:gravity="left"
-            android:paddingLeft="5dp"
             android:textColor="#666"
+            android:hint="place name"
+            android:textStyle="bold"
+            android:textSize="13dp" />
 
 
-            android:textSize="18dp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="30sp">
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="left"
+
+            android:textColor="#7fc342"
+            android:text="Start Date :"
+            android:textSize="13dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/startDate"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2.8"
+            android:gravity="left"
+
+            android:textColor="#666"
+            android:hint="2017-05-12"
+            android:textSize="13dp" />
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3.9"
+            android:gravity="left"
+
+            android:textColor="#7fc342"
+            android:text="at :"
+            android:textSize="13dp"
+            android:textStyle="bold" />
+        <TextView
+            android:id="@+id/startTime"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="left"
+
+            android:textColor="#666"
+            android:hint="15:17"
+            android:textSize="13dp" />
+
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginLeft="30sp">
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="left"
+
+            android:textColor="#7fc342"
+            android:text="End Date :"
+            android:textSize="13dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/endDate"
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="2.8"
+            android:gravity="left"
+
+            android:textColor="#666"
+            android:hint="2017-05-12"
+            android:textSize="13dp" />
+        <TextView
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3.9"
+            android:gravity="left"
+
+            android:textColor="#7fc342"
+            android:text="at :"
+            android:textSize="13dp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/endTime"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="left"
+            android:hint="15:17"
+
+            android:textColor="#666666"
+            android:textSize="13dp" />
+
+
+    </LinearLayout>
     </LinearLayout>
 
 

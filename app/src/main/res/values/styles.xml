@@ -1,11 +1,22 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="drawerArrowStyle">@style/MyDrawerArrowStyle</item>
+        <item name="actionButtonStyle">@style/MyActionButtonStyle</item>
+    </style>
+
+    <style name="MyDrawerArrowStyle" parent="@style/Widget.AppCompat.DrawerArrowToggle">
+        <!--item name="spinBars">true</item-->
+        <item name="color">@color/colorPrimary</item>
+    </style>
+
+    <style name="MyActionButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
+        <item name="android:minWidth">28dip</item>
     </style>
 
 </resources>

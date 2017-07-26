@@ -9,7 +9,7 @@
         android:paddingBottom="8dp"
         android:fontFamily="inherit"
         android:paddingTop="8dp"
-        android:textColor="#f57e41"
+        android:textColor="@color/white"
         android:id="@+id/heading_item"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

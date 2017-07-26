@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/white"
+        android:elevation="4dp"
+        android:weightSum="1">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ABOUT US"
+            android:textColor="@color/colorPrimary"
+            android:paddingStart="-63sp"
+            android:gravity="center"
+            android:textSize="20dp"
+            />
+
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Who Is GoinOutGames?"
+            android:textStyle="bold"
+            android:layout_marginLeft="20sp"
+            android:layout_marginBottom="10sp"
+            android:layout_gravity="bottom"
+            android:layout_weight="2"/>
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="130sp"
+            android:layout_height="104sp"
+            android:layout_gravity="right"
+            app:srcCompat="@drawable/about_us"
+            android:layout_weight="1"/>
+
+
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Let’s just say we’re a bunch of ex-party aficionados that amassed a crap ton of ninja like skills in networking galas, meetups, and crazy nights out.
+
+In the pursuit of epic awesomeness we tried all sorts of gimmicks, party games, and icebreakers to not only help connect people with other people, but to also take the evening from alright to dynamite.
+
+Some of our attempts at awesomeness… well weren’t always that awesome, but with practice, a bit of tweaking, and a lot of partying we are finally able to share with you our favorite goin' out games."
+        android:layout_marginLeft="20sp"
+        android:textSize="14sp"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Contact Us:"
+        android:textStyle="bold"
+        android:layout_margin="20sp"
+        android:layout_gravity="bottom"
+        android:textSize="14sp"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Whether you're looking to chat us up or just grab a drink feel free to drop a line any time. For now we like the electronic mail: gamemaster@goinoutgames.com
+
+Goin Out Games, LLC is an Austin, Texas based company."
+        android:layout_marginLeft="20sp"
+        android:textSize="14sp"/>
+
+</LinearLayout>
