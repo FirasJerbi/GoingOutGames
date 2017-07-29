@@ -22,7 +22,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.text.format.DateFormat;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,8 +44,6 @@ import java.net.URL;
 import java.util.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Locale;
@@ -76,6 +73,8 @@ public class AddEvent extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_event);
+
+
 
         mGoogleApiClient = new GoogleApiClient
                 .Builder(this)
@@ -244,6 +243,7 @@ public class AddEvent extends AppCompatActivity implements
         protected void onPreExecute() {
             super.onPreExecute();
             progressDialog = new ProgressDialog(AddEvent.this);
+            progressDialog.setMessage("Adding a new event...");
             progressDialog.show();
         }
 
@@ -256,11 +256,13 @@ public class AddEvent extends AppCompatActivity implements
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            Log.e("post execute message","  s= "+s);
             if (progressDialog != null) {
                 progressDialog.dismiss();
             }
             finish();
         }
+
     }
 
     public String SaveEvent (){
@@ -357,10 +359,11 @@ public class AddEvent extends AppCompatActivity implements
                 if (addressList.size() > 0) {
                     Log.e("geocoder results",addressList.get(0).toString());
 
-                    if(addressList.get(0).getLocality()!=null){
+                    /*if(addressList.get(0).getLocality()!=null){
                         currentCity=addressList.get(0).getLocality();
                     }
-                    else currentCity = addressList.get(0).getAddressLine(1);
+                    else currentCity = addressList.get(0).getAddressLine(1);*/
+                    currentCity=addressList.get(0).getAdminArea();
                     currentCountry = addressList.get(0).getCountryCode();
                     country = currentCountry;
                     city = currentCity;

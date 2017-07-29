@@ -366,10 +366,11 @@ public class MainActivity extends AppCompatActivity {
                 if (addressList.size() > 0) {
                     Log.e("geocoder results",addressList.get(0).toString());
 
-                    if(addressList.get(0).getLocality()!=null){
+                    /*if(addressList.get(0).getLocality()!=null){
                         currentCity=addressList.get(0).getLocality();
-                    }
-                    else currentCity = addressList.get(0).getAddressLine(1);
+                    }*/
+                    //else currentCity = addressList.get(0).getAddressLine(1);
+                    currentCity=addressList.get(0).getAdminArea();
                     currentCountry = addressList.get(0).getCountryCode();
                     country = currentCountry;
                     city = currentCity;
