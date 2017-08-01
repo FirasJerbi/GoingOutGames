@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -13,6 +14,7 @@ import android.location.LocationManager;
 import android.os.AsyncTask;
 import android.os.Build;
 
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -31,6 +33,17 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResult;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.vision.text.Text;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import org.json.JSONException;
@@ -55,9 +68,10 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
     private ExpandableListView listViewEvents;
     private LocationManager locationManager;
+    int REQUEST_CHECK_SETTINGS=13;
 
 
-    TextView t;
+    TextView t,r;
     Double longitude, latitude;
     String city, country;
     GetDataTask task;
@@ -67,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
+    private LocationListener locationListener;
 
 
     @Override
@@ -74,8 +89,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         getPermissions();
+        displayLocationSettingsRequest(this);
         longitude= new Double(0);
         latitude= new Double(0);
         final Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
@@ -108,21 +123,32 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
         listViewEvents = (ExpandableListView) findViewById(R.id.listViewEvents);
         t = (TextView) findViewById(R.id.textView);
+        r=(TextView)findViewById(R.id.refresh);
+        r.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this,MainActivity.class));
+                finish();
+            }
+        });
         locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new LocationListener() {
 
-        /*locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 longitude = location.getLongitude();
                 latitude = location.getLatitude();
                 Log.e("LOCATION listener", "longitude = " + longitude + " latitude = " + latitude);
                 updateLocation();
-            }
 
+            }
             @Override
             public void onStatusChanged(String s, int i, Bundle bundle) {
+                //displayLocationSettingsRequest(MainActivity.this);
 
             }
 
@@ -133,11 +159,9 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onProviderDisabled(String s) {
-                startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
-            }
-        };*/
-        configureLocation();
 
+            }
+        };
         ImageButton addEvent=(ImageButton)findViewById(R.id.addEvent);
         addEvent.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,21 +196,37 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        //locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 20000, 0, locationListener);
+
+
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 0, locationListener);
         Location loc = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        if(loc==null){
+            locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 10000, 0, locationListener);
+            loc = locationManager.getLastKnownLocation(LocationManager.PASSIVE_PROVIDER);
+        }
+        if(loc==null){
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 10000, 0, locationListener);
+            loc = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+        }
         if (loc != null) {
             Log.e("LastKnownLoction", "longitude = " + loc.getLongitude() + " latitude = " + loc.getLatitude());
             longitude = loc.getLongitude();
             latitude = loc.getLatitude();
         }
-        else Log.e("Location unknown", "-----------");
+        else{
+            Log.e("Location unknown", "-----------");
+        }
         updateLocation();
+
+
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         currentUser = mAuth.getCurrentUser();
+        configureLocation();
+
         if (currentUser != null) {
             try {
                 Log.e("Share Prefs", String.valueOf(getSharedPreferences("gog",MODE_PRIVATE).getInt("userId",0)));
@@ -417,11 +457,62 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+    private void displayLocationSettingsRequest(Context context) {
+        GoogleApiClient googleApiClient = new GoogleApiClient.Builder(context)
+                .addApi(LocationServices.API).build();
+        googleApiClient.connect();
 
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(10000 / 2);
 
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+        builder.setAlwaysShow(true);
 
+        PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build());
+        result.setResultCallback(new ResultCallback<LocationSettingsResult>() {
+            @Override
+            public void onResult(LocationSettingsResult result) {
+                final Status status = result.getStatus();
+                switch (status.getStatusCode()) {
+                    case LocationSettingsStatusCodes.SUCCESS:
+                        Log.i("tag", "All location settings are satisfied.");
 
+                        break;
+                    case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                        Log.i("tag", "Location settings are not satisfied. Show the user a dialog to upgrade location settings ");
 
+                        try {
+                            // Show the dialog by calling startResolutionForResult(), and check the result
+                            // in onActivityResult().
+                            status.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
+                        } catch (IntentSender.SendIntentException e) {
+                            Log.i("TAG", "PendingIntent unable to execute request.");
+                        }
+                        break;
+                    case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                        Log.i("TAG", "Location settings are inadequate, and cannot be fixed here. Dialog not created.");
+                        break;
+                }
+            }
 
+        });
 
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode==REQUEST_CHECK_SETTINGS){
+            if(resultCode==RESULT_OK){
+                configureLocation();
+                startActivity(new Intent(MainActivity.this,MainActivity.class));
+                finish();
+            }else{
+                Toast.makeText(this,"please enable GPS service to continue",Toast.LENGTH_LONG).show();
+                displayLocationSettingsRequest(MainActivity.this);
+            }
+        }
+    }
 }
